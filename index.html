@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EverStat — Mesure. Comprends. Progresse.</title>
+  <link rel="icon" href="images/icon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cal+Sans&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      /* Palette extraite de l'icône EverStat :
+     bleu cobalt #004baf, vert forêt #007d32, rouge #e11919, ocre #fac819, fond gris perle */
+      --bg: #080c14;
+      --bg2: #0c1220;
+      --surface: #101828;
+      --surface2: #162035;
+      --surface3: #1c2a42;
+      --border: rgba(0, 100, 220, 0.12);
+      --border2: rgba(30, 130, 255, 0.20);
+      --text: #e8f0ff;
+      --text2: #7a9abf;
+      --text3: #dff797;
+      /* Bleu cobalt — couleur dominante de l'icône */
+      --a1: #1a6fd4;
+      --a2: #2a88f5;
+      /* --a3: #60aaff;*/
+      --a3: #FBCE2B;
+      --grad: linear-gradient(135deg, #0fc86b, #2ad0f5);
+      --grad-glow: rgba(26, 111, 212, 0.28);
+      /* Couleurs secondaires de l'icône */
+      --green: #2ab85a;
+      --red: #e03030;
+      --amber: #f0b800;
+      --sky: #60aaff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── LANG ── */
+    .lang-wrap {
+      display: flex;
+      gap: 4px;
+    }
+
+
+    .lang-btn {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      color: var(--text2);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      padding: 5px 13px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active,
+    .lang-btn:hover {
+      background: var(--a1);
+      color: #fff;
+      border-color: var(--a1);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 48px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(8, 8, 16, 0.8);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 0.5px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    nav.scrolled {
+      border-bottom-color: var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+    }
+
+    .nav-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+    }
+
+    .nav-wordmark {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+
+    .nav-wordmark span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    /*
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }*/
+    .nav-links a:not(.btn-primary) {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:not(.btn-primary):hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      background: var(--grad);
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 20px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-cta:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px var(--grad-glow);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 40px 60px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Mesh gradient background */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(0, 75, 175, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(42, 136, 245, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0, 75, 175, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Animated grid lines */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      opacity: 0.3;
+      background-image:
+        linear-gradient(rgba(0, 75, 175, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 75, 175, 0.08) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(0, 75, 175, 0.12);
+      border: 0.5px solid rgba(26, 111, 212, 0.35);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--a3);
+      margin-bottom: 1.8rem;
+      letter-spacing: 0.04em;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 0.8rem;
+      animation: fadeUp 0.5s 0.08s ease both;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text2);
+      font-weight: 300;
+      font-style: italic;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.5s 0.14s ease both;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.5s 0.2s ease both;
+      margin-bottom: 5rem;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--grad);
+      color: #fff;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 26px;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.88;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px var(--grad-glow);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 400;
+      padding: 13px 26px;
+      border-radius: 10px;
+      border: 0.5px solid var(--border2);
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(150, 150, 255, 0.4);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-coffee {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #1a1400;
+      color: #fbbf24;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 26px;
+      border-radius: 10px;
+      border: 0.5px solid rgba(251, 191, 36, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-coffee:hover {
+      background: rgba(251, 191, 36, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.15);
+    }
+
+
+
+
+    /* ── CAROUSEL ── */
+    .carousel-section {
+      width: 100%;
+      animation: fadeUp 0.6s 0.28s ease both;
+      position: relative;
+      user-select: none;
+    }
+
+    .carousel-track-wrap {
+      overflow: hidden;
+      position: relative;
+      /* fade edges */
+      mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 20px 0 28px;
+      will-change: transform;
+    }
+
+    .carousel-slide {
+      flex-shrink: 0;
+      width: 160px;
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      display: block;
+      border-radius: 22px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+      border: 1.5px solid var(--border2);
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .carousel-slide.active {
+      width: 200px;
+    }
+
+    .carousel-slide.active img {
+      box-shadow: 0 24px 64px rgba(0, 75, 175, 0.35);
+      border-color: var(--a1);
+    }
+
+    .carousel-slide.side1 {
+      opacity: 0.7;
+      transform: scale(0.97);
+    }
+
+    .carousel-slide.side2 {
+      opacity: 0.4;
+      transform: scale(0.93);
+    }
+
+    .carousel-slide.hidden {
+      opacity: 0.15;
+      transform: scale(0.88);
+    }
+
+    .carousel-slide:hover img {
+      border-color: var(--a2);
+    }
+
+    /* Controls */
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .carousel-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      color: var(--text2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-size: 15px;
+    }
+
+    .carousel-btn:hover {
+      background: var(--surface3);
+      border-color: var(--a1);
+      color: var(--text);
+    }
+
+    .carousel-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--surface3);
+      border: 0.5px solid var(--border2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .carousel-dot.active {
+      background: var(--a1);
+      width: 20px;
+      border-radius: 3px;
+    }
+
+    .carousel-caption {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text3);
+      letter-spacing: 0.05em;
+      min-height: 18px;
+      transition: opacity 0.3s;
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(16px);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+
+    .lightbox.open {
+      display: flex;
+      animation: lbIn 0.25s ease;
+    }
+
+    @keyframes lbIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .lightbox-img {
+      max-height: 88vh;
+      max-width: 90vw;
+      border-radius: 24px;
+      box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8);
+      border: 1.5px solid var(--border2);
+      animation: lbScale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: default;
+    }
+
+    @keyframes lbScale {
+      from {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .lightbox-caption {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.06em;
+      pointer-events: none;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      color: var(--text2);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .lightbox-close:hover {
+      background: var(--surface3);
+      color: var(--text);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .lightbox-nav:hover {
+      background: var(--surface3);
+      border-color: var(--a1);
+    }
+
+    .lightbox-nav.prev {
+      left: 20px;
+    }
+
+    .lightbox-nav.next {
+      right: 20px;
+    }
+
+    /* ****************** */
+
+    /* ── STATS BAND ── */
+    .stats-band {
+      background: var(--surface);
+      border-top: 0.5px solid var(--border);
+      border-bottom: 0.5px solid var(--border);
+      padding: 56px 40px;
+    }
+
+    .stats-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      text-align: center;
+    }
+
+    .sv {
+      font-size: 3rem;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .sv-grad {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sl {
+      font-size: 14px;
+      color: var(--text2);
+      font-weight: 300;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      padding: 96px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--a3);
+      margin-bottom: 1.2rem;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 16px;
+      height: 1px;
+      background: var(--a1);
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.12;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      color: var(--text2);
+      font-size: 1.05rem;
+      max-width: 520px;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ── USE CASES ── */
+    .uc-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 3rem;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 0.5px solid var(--border);
+    }
+
+    .uc-card {
+      background: var(--surface);
+      padding: 28px;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .uc-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--uc-top, var(--a1));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .uc-card:hover::before {
+      opacity: 1;
+    }
+
+    .uc-card:hover {
+      background: var(--surface2);
+    }
+
+    .uc-icon {
+      font-size: 24px;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .uc-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .uc-card p {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .uc-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .uc-tag {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: var(--surface3);
+      color: var(--text3);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      border: 0.5px solid var(--border);
+    }
+
+    /* ── FEATURES ── */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 3rem;
+    }
+
+    .feat-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feat-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-3px);
+      background: var(--surface2);
+    }
+
+    .feat-card:hover::before {
+      opacity: 1;
+    }
+
+    .feat-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+    }
+
+    .feat-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .feat-card p {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    .feat-content {
+      margin-bottom: 16px;
+    }
+
+    /* Folder demo */
+    .folder-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .folder-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface3);
+      border-radius: 8px;
+      padding: 8px 11px;
+      border: 0.5px solid var(--border);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .folder-item span:first-child {
+      font-size: 14px;
+    }
+
+    .folder-item span:nth-child(2) {
+      flex: 1;
+      font-weight: 400;
+    }
+
+    .fi-count {
+      font-size: 11px;
+      background: var(--surface2);
+      color: var(--text3);
+      padding: 2px 7px;
+      border-radius: 20px;
+      border: 0.5px solid var(--border);
+    }
+
+    /* Chart demo */
+    .chart-demo {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 12px;
+      border: 0.5px solid var(--border);
+    }
+
+    .cd-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 48px;
+      margin-bottom: 10px;
+    }
+
+    .cd-bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .cd-stats {
+      display: flex;
+      border-top: 0.5px solid var(--border);
+      padding-top: 9px;
+    }
+
+    .cd-stat {
+      flex: 1;
+      text-align: center;
+    }
+
+    .cd-val {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .cd-lbl {
+      display: block;
+      font-size: 10px;
+      color: var(--text3);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin-top: 3rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: calc(16.6% + 10px);
+      right: calc(16.6% + 10px);
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border2), transparent);
+    }
+
+    .step {
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .step-n {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      background: var(--grad);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 20px var(--grad-glow);
+    }
+
+    .step h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 100px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(0, 75, 175, 0.1) 0%, transparent 70%);
+    }
+
+    .cta-inner {
+      max-width: 580px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .cta-inner h2 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 1rem;
+      line-height: 1.15;
+    }
+
+    .cta-inner p {
+      color: var(--text2);
+      font-size: 1.05rem;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    .cta-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    #playBadge:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(150, 150, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 75, 175, 0.2);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 32px 48px;
+      border-top: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .ft-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text2);
+      letter-spacing: -0.02em;
+    }
+
+    .ft-logo span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ft-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .ft-links a {
+      font-size: 13px;
+      color: var(--text3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .ft-links a:hover {
+      color: var(--text2);
+    }
+
+    .ft-copy {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .divider {
+      width: 100%;
+      height: 0.5px;
+      background: var(--border);
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .feat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 90px 20px 50px;
+      }
+
+      .section {
+        padding: 60px 20px;
+      }
+
+      .uc-grid {
+        grid-template-columns: 1fr 1fr;
+        border-radius: 12px;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .steps::before {
+        display: none;
+      }
+
+      .stats-inner {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 28px 20px;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .feat-grid,
+      .uc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+
+  <nav id="nav">
+    <a href="#" class="nav-logo">
+      <img src="images/icon.png" class="nav-icon" alt="EverStat">
+      <span class="nav-wordmark">Ever<span>Stat</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#usecases" data-fr="Usages" data-en="Use cases">Usages</a>
+      <a href="#features" data-fr="Fonctionnalités" data-en="Features">Fonctionnalités</a>
+      <a href="#how" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</a>
+      <a href="#support" data-fr="Soutenir" data-en="Support">Soutenir</a>
+
+      <a href="https://play.google.com/store/apps/details?id=com.arnimama.everstat" target="_blank" id="playBadge">
+        <img src="https://www.gstatic.com/android/market_images/web/play_logo_x2.png" alt="Google Play"
+          style="height:28px;display:block;transition:all 0.2s">
+      </a>
+    </div>
+
+    <div class="lang-wrap">
+      <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      <span data-fr="Gratuit sur Android" data-en="Free on Android">Gratuit sur Android</span>
+    </div>
+    <h1>
+      <span data-fr="Mesure<br><em>Comprends</em><br>Progresse<br>"
+        data-en="Measure<br><em>Understand</em><br>Progress<br>">Mesure<br><em>Comprends</em><br>Progresse<br></span>
+    </h1>
+    <p class="hero-tagline" data-fr="Pour mieux te connaître, note tes habitudes."
+      data-en="To know yourself better, track your habits.">Pour mieux te connaître, note tes habitudes.</p>
+    <div class="hero-btns">
+      <a href="https://play.google.com/store/apps/details?id=com.arnimama.everstat" target="_blank" id="playBadge"
+        style="display:flex;align-items:center;padding:13px 26px;background:rgba(255,255,255,0.04);border:0.5px solid var(--border2);border-radius:10px;transition:all 0.2s">
+        <img src="https://www.gstatic.com/android/market_images/web/play_logo_x2.png" alt="Google Play"
+          style="height:22px;display:block;transition:all 0.2s">
+      </a>
+      <a href="https://buymeacoffee.com/EverStat" target="_blank" class="btn-coffee">
+        ☕ <span data-fr="Soutenir le projet" data-en="Support the project">Soutenir le projet</span>
+      </a>
+    </div>
+
+    <!-- CAROUSEL -->
+    <div class="carousel-section">
+      <div class="carousel-track-wrap">
+        <div class="carousel-track" id="cTrack">
+          <div class="carousel-slide" data-caption-fr="Tableau de bord personnalisable"
+            data-caption-en="Configurable dashboard">
+            <img src="images/screen1.png" alt="Tableau de bord EverStat personnalisable">
+          </div>
+          <div class="carousel-slide" data-caption-fr="Entièrement configurable selon vos envies"
+            data-caption-en="Fully configurable according to your desires">
+            <img src="images/screen2.png" alt="Entièrement configurable selon vos envies">
+          </div>
+          <div class="carousel-slide" data-caption-fr="Suivez l'évolution de votre compteur"
+            data-caption-en="Track the evolution of your counter">
+            <img src="images/screen3.png" alt="Suivez l'évolution de votre compteur">
+          </div>
+          <div class="carousel-slide" data-caption-fr="Affichez vos indicateurs préférés"
+            data-caption-en="Show your favorite indicators">
+            <img src="images/screen4.png" alt="Affichez vos indicateurs préférés">
+          </div>
+          <div class="carousel-slide" data-caption-fr="Visualisez l'historique de vos saisies"
+            data-caption-en="View your entry history">
+            <img src="images/screen5.png" alt="Visualisez l'historique de vos saisies">
+          </div>
+          
+          <div class="carousel-slide" data-caption-fr="Courbes ou histogrammes" data-caption-en="Curves or histograms">
+            <img src="images/screen6.png" alt="Courbes ou histogrammes">
+          </div>
+          
+          <div class="carousel-slide" data-caption-fr="Compteur configurable"
+            data-caption-en="Configure each counter">
+            <img src="images/screen7.png" alt="Paramétrez chaque compteur">
+          </div>
+          <!-- Add more slides: copy the block above and change the src -->
+          <!-- <div class="carousel-slide" data-caption-fr="..." data-caption-en="...">
+               <img src="images/screen4.png" alt="...">
+             </div> -->
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="cPrev" aria-label="Précédent">&#8592;</button>
+        <div class="carousel-dots" id="cDots"></div>
+        <button class="carousel-btn" id="cNext" aria-label="Suivant">&#8594;</button>
+      </div>
+      <div class="carousel-caption" id="cCaption"></div>
+    </div>
+
+  </section>
+
+  <!-- ── STATS ── -->
+  <div class="stats-band">
+    <div class="stats-inner">
+      <div class="reveal">
+        <div class="sv sv-grad">∞</div>
+        <div class="sl" data-fr="Types d'évènements possibles" data-en="Types of events possible">Types d'évènements
+          possibles</div>
+      </div>
+      <div class="reveal">
+        <div class="sv sv-grad">1<span style="font-size:1.8rem"> tap</span></div>
+        <div class="sl" data-fr="Pour enregistrer un évènement" data-en="To log an event">Pour enregistrer un évènement
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="sv sv-grad">100%</div>
+        <div class="sl" data-fr="Vos données restent sur votre téléphone" data-en="Your data stays on your phone">Vos
+          données restent sur votre téléphone</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── USE CASES ── -->
+  <section class="section" id="usecases">
+    <div class="reveal">
+      <div class="eyebrow" data-fr="Cas d'usage" data-en="Use cases">Cas d'usage</div>
+      <h2 class="section-title" data-fr="Si vous pouvez le compter,<br>vous pouvez le suivre."
+        data-en="If you can count it,<br>you can track it.">Si vous pouvez le compter,<br>vous pouvez le suivre.</h2>
+      <p class="section-sub"
+        data-fr="EverStat ne vous impose aucune catégorie. Créez vos propres compteurs et mesurez ce qui compte vraiment pour vous."
+        data-en="EverStat doesn't limit you to preset categories. Create your own counters and measure what truly matters.">
+        EverStat ne vous impose aucune catégorie. Créez vos propres compteurs et mesurez ce qui compte vraiment pour
+        vous.</p>
+    </div>
+    <div class="uc-grid" style="margin-top:3rem">
+      <div class="uc-card reveal" style="--uc-top:var(--green)">
+        <span class="uc-icon">🏋️</span>
+        <h3 data-fr="Sport & fitness" data-en="Sport & fitness">Sport & fitness</h3>
+        <p data-fr="Répétitions, séries, km — suivez vos performances au fil des semaines."
+          data-en="Reps, sets, km — track your performance week after week.">Répétitions, séries, km — suivez vos
+          performances au fil des semaines.</p>
+        <div class="uc-tags"><span class="uc-tag" data-fr="Pompes" data-en="Push-ups">Pompes</span><span class="uc-tag"
+            data-fr="Km courus" data-en="Km run">Km courus</span><span class="uc-tag" data-fr="Séances"
+            data-en="Sessions">Séances</span></div>
+      </div>
+      <div class="uc-card reveal" style="--uc-top:var(--a2)">
+        <span class="uc-icon">✅</span>
+        <h3 data-fr="Habitudes" data-en="Habits">Habitudes</h3>
+        <p data-fr="Construisez des séries et visualisez votre régularité sur le long terme."
+          data-en="Build streaks and visualize your consistency over time.">Construisez des séries et visualisez votre
+          régularité sur le long terme.</p>
+        <div class="uc-tags"><span class="uc-tag" data-fr="Méditation" data-en="Meditation">Méditation</span><span
+            class="uc-tag" data-fr="Lecture" data-en="Reading">Lecture</span><span class="uc-tag" data-fr="Eau"
+            data-en="Water">Eau</span></div>
+      </div>
+      <div class="uc-card reveal" style="--uc-top:var(--red)">
+        <span class="uc-icon">🎮</span>
+        <h3 data-fr="Gaming" data-en="Gaming">Gaming</h3>
+        <p data-fr="Kills, victoires, défaites — tout ce que les jeux ne trackent pas pour vous."
+          data-en="Kills, wins, losses — everything your game doesn't log for you.">Kills, victoires, défaites — tout ce
+          que les jeux ne trackent pas pour vous.</p>
+        <div class="uc-tags"><span class="uc-tag" data-fr="Kills" data-en="Kills">Kills</span><span class="uc-tag"
+            data-fr="Victoires" data-en="Wins">Victoires</span><span class="uc-tag" data-fr="Sessions"
+            data-en="Sessions">Sessions</span></div>
+      </div>
+      <div class="uc-card reveal" style="--uc-top:var(--amber)">
+        <span class="uc-icon">💊</span>
+        <h3 data-fr="Addictions" data-en="Addictions">Addictions</h3>
+        <p data-fr="Cigarettes, alcool, sucre, café — suivez vos envies et vos progrès."
+          data-en="Cigarettes, alcohol, sugar, coffee — track your cravings and progress.">Cigarettes, alcool, sucre,
+          café — suivez vos envies et vos progrès.</p>
+        <div class="uc-tags"><span class="uc-tag" data-fr="Cigarettes" data-en="Cigarettes">Cigarettes</span><span
+            class="uc-tag" data-fr="Alcool" data-en="Alcohol">Alcool</span>
+          <span class="uc-tag" data-fr="Sucre" data-en="Sugar">Sucre</span>
+        </div>
+      </div>
+      <div class="uc-card reveal" style="--uc-top:var(--green)">
+        <span class="uc-icon">🌱</span>
+        <h3 data-fr="Quotidien & bien-être" data-en="Daily & wellness">Quotidien & bien-être</h3>
+        <p data-fr="Repas, humeur, sommeil, médicaments — prenez le pouls de votre journée."
+          data-en="Meals, mood, sleep, meds — take a pulse of your day.">Repas, humeur, sommeil, médicaments — prenez le
+          pouls de votre journée.</p>
+        <div class="uc-tags"><span class="uc-tag" data-fr="Repas" data-en="Meals">Repas</span><span class="uc-tag"
+            data-fr="Humeur" data-en="Mood">Humeur</span>
+          <span class="uc-tag" data-fr="Régime" data-en="Diet">Régime</span>
+        </div>
+      </div>
+      <div class="uc-card reveal" style="border-style:dashed;background:transparent">
+        <span class="uc-icon">✨</span>
+        <h3 data-fr="Votre usage" data-en="Your own use">Votre usage</h3>
+        <p data-fr="Si vous pouvez le nommer, vous pouvez le compter. Sans limite."
+          data-en="If you can name it, you can count it. Without limits.">Si vous pouvez le nommer, vous pouvez le
+          compter. Sans limite.</p>
+        <div class="uc-tags"><span class="uc-tag" data-fr="Illimité" data-en="Unlimited">Illimité</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── FEATURES ── -->
+  <section class="section" id="features">
+    <div class="reveal">
+      <div class="eyebrow" data-fr="Fonctionnalités" data-en="Features">Fonctionnalités</div>
+      <h2 class="section-title" data-fr="Tout pour organiser,<br>visualiser et comprendre."
+        data-en="Everything to organise,<br>visualise and understand.">Tout pour organiser,<br>visualiser et comprendre.
+      </h2>
+      <p class="section-sub"
+        data-fr="De la simple prise de note à la synthèse graphique — EverStat s'adapte à votre façon de travailler."
+        data-en="From a simple tap to a full graphical overview — EverStat adapts to you.">De la simple prise de note à
+        la synthèse graphique — EverStat s'adapte à votre façon de travailler.</p>
+    </div>
+    <div class="feat-grid">
+
+      <div class="feat-card reveal">
+        <div class="feat-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--a2)" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+        </div>
+        <div class="feat-content">
+          <h3 data-fr="Dossiers & organisation" data-en="Folders & organisation">Dossiers & organisation</h3>
+          <p data-fr="Regroupez vos compteurs dans des dossiers thématiques. Chaque univers a son espace, clair et séparé."
+            data-en="Group counters into themed folders. Each world has its own clear, separate space.">Regroupez vos
+            compteurs dans des dossiers thématiques. Chaque univers a son espace, clair et séparé.</p>
+        </div>
+        <div class="folder-demo">
+          <div class="folder-item"><span>🏋️</span><span data-fr="Gym" data-en="Gym">Gym</span><span
+              class="fi-count">3</span></div>
+          <div class="folder-item"><span>🌱</span><span data-fr="Jardin 2026" data-en="Garden 2026">Jardin
+              2026</span><span class="fi-count">5</span></div>
+          <div class="folder-item"><span>💼</span><span data-fr="Travail" data-en="Work">Travail</span><span
+              class="fi-count">4</span></div>
+        </div>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+        </div>
+        <div class="feat-content">
+          <h3 data-fr="Synthèse graphique" data-en="Graphical overview">Synthèse graphique</h3>
+          <p data-fr="Courbes, barres, totaux, moyennes — chaque compteur génère automatiquement ses graphiques sur la période de votre choix."
+            data-en="Lines, bars, totals, averages — auto-generated charts for any time period.">Courbes, barres,
+            totaux, moyennes — chaque compteur génère automatiquement ses graphiques sur la période de votre choix.</p>
+        </div>
+        <div class="chart-demo">
+          <div class="cd-bars">
+            <div class="cd-bar" style="height:30%;background:var(--a1);opacity:.35"></div>
+            <div class="cd-bar" style="height:55%;background:var(--a1);opacity:.5"></div>
+            <div class="cd-bar" style="height:40%;background:var(--a1);opacity:.4"></div>
+            <div class="cd-bar" style="height:80%;background:var(--a1);opacity:.65"></div>
+            <div class="cd-bar" style="height:60%;background:var(--a1);opacity:.5"></div>
+            <div class="cd-bar" style="height:90%;background:var(--a1);opacity:.8"></div>
+            <div class="cd-bar" style="height:70%;background:var(--a2)"></div>
+          </div>
+          <div class="cd-stats">
+            <div class="cd-stat"><span class="cd-val"
+                style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">748</span><span
+                class="cd-lbl" data-fr="total" data-en="total">total</span></div>
+            <div class="cd-stat"><span class="cd-val">107</span><span class="cd-lbl" data-fr="moy/j"
+                data-en="avg/d">moy/j</span></div>
+            <div class="cd-stat"><span class="cd-val" style="color:var(--amber)">🔥 12</span><span class="cd-lbl"
+                data-fr="série" data-en="streak">série</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+        </div>
+        <h3 data-fr="Indicateurs sur l'accueil" data-en="Home screen indicators">Indicateurs sur l'accueil</h3>
+        <p data-fr="Affichez vos métriques clés directement sur la page d'accueil. Total, moyenne, dernière valeur — tout visible d'un coup d'œil."
+          data-en="Pin key metrics right on the home screen. Total, average, last value — everything at a glance.">
+          Affichez vos métriques clés directement sur la page d'accueil. Total, moyenne, dernière valeur — tout visible
+          d'un coup d'œil.</p>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--a3)" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <h3 data-fr="Date d'enregistrement" data-en="Event dating">Date d'enregistrement</h3>
+        <p data-fr="Chaque évènement est enregistré avec sa date. Analysez vos tendances jour par jour, semaine par semaine."
+          data-en="Every event is logged with its date. Analyse your trends day by day, week by week.">Chaque évènement
+          est enregistré avec sa date. Analysez vos tendances jour par jour, semaine par semaine.</p>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <h3 data-fr="100% privé, hors ligne" data-en="100% private, offline">100% privé, hors ligne</h3>
+        <p data-fr="Aucun compte, aucun serveur. Toutes vos données restent sur votre téléphone, pour toujours."
+          data-en="No account, no server. All your data stays on your phone, forever.">Aucun compte, aucun serveur.
+          Toutes vos données restent sur votre téléphone, pour toujours.</p>
+      </div>
+
+      <div class="feat-card reveal" style="border-style:dashed">
+        <div class="feat-icon-wrap"
+          style="background:transparent;border-color:transparent;font-size:22px;color:var(--a3)">∞</div>
+        <h3 data-fr="Infiniment extensible" data-en="Infinitely extensible">Infiniment extensible</h3>
+        <p data-fr="Autant de compteurs, dossiers et indicateurs que vous le souhaitez. EverStat grandit avec vous."
+          data-en="As many counters, folders and indicators as you want. EverStat grows with you.">Autant de compteurs,
+          dossiers et indicateurs que vous le souhaitez. EverStat grandit avec vous.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── HOW IT WORKS ── -->
+  <section class="section" id="how">
+    <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto">
+      <div class="eyebrow" data-fr="Comment ça marche" data-en="How it works">Comment ça marche</div>
+      <h2 class="section-title" data-fr="Prêt en 30 secondes." data-en="Ready in 30 seconds.">Prêt en 30 secondes.</h2>
+      <p class="section-sub" style="margin:0 auto"
+        data-fr="Pas de compte, pas de configuration. Ouvrez l'app et commencez."
+        data-en="No account, no setup. Open the app and start.">Pas de compte, pas de configuration. Ouvrez l'app et
+        commencez.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-n">1</div>
+        <h3 data-fr="Créez un compteur" data-en="Create a counter">Créez un compteur</h3>
+        <p data-fr="Tapez + et nommez votre compteur. Pompes, victoires, verres d'eau — c'est vous qui décidez."
+          data-en="Tap + and name your counter. Push-ups, wins, glasses of water — you decide.">Tapez + et nommez votre
+          compteur. Pompes, victoires, verres d'eau — c'est vous qui décidez.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-n">2</div>
+        <h3 data-fr="Tapez à chaque évènement" data-en="Tap each event">Tapez à chaque évènement</h3>
+        <p data-fr="Un tap enregistre l'évènement avec son horodatage précis. Aussi simple que ça."
+          data-en="One tap logs the event with its exact timestamp. As simple as that.">Un tap enregistre l'évènement
+          avec son horodatage précis. Aussi simple que ça.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-n">3</div>
+        <h3 data-fr="Analysez vos stats" data-en="Analyse your stats">Analysez vos stats</h3>
+        <p data-fr="Totaux, moyennes, séries, graphiques — tout est généré automatiquement."
+          data-en="Totals, averages, streaks, charts — everything is generated automatically.">Totaux, moyennes, séries,
+          graphiques — tout est généré automatiquement.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section" id="support">
+    <div class="cta-inner reveal">
+      <h2 data-fr="Vous aimez EverStat ?" data-en="Enjoying EverStat?">Vous aimez EverStat ?</h2>
+      <p data-fr="EverStat est gratuit et sans publicité. Si vous l' appréciez, vous pouvez m'offrir un café pour m'aider à développer de nouvelles fonctionnalités. Merci ☕"
+        data-en="EverStat is free and ad-free. If you like it, you can buy me a coffee to help me keep building new features. Thank you ☕">
+        EverStat est
+        gratuit et sans publicité. Si vous l'appréciez, vous pouvez m'offrir un café pour m'aider à développer de
+        nouvelles fonctionnalités. Merci ☕</p>
+      <div class="cta-btns">
+        <a href="https://buymeacoffee.com/EverStat" target="_blank" class="btn-coffee"
+          style="font-size:16px;padding:15px 32px">
+          ☕ <span data-fr="Soutenir le projet" data-en="Support the project">Soutenir le projet</span>
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=com.arnimama.everstat" target="_blank" id="playBadge"
+          style="display:flex;align-items:center;padding:13px 26px;background:rgba(255,255,255,0.04);border:0.5px solid var(--border2);border-radius:10px;transition:all 0.2s">
+          <img src="https://www.gstatic.com/android/market_images/web/play_logo_x2.png" alt="Google Play"
+            style="height:22px;display:block;transition:all 0.2s">
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="divider"></div>
+  <section class="section" id="how">
+    <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto">
+      <div class="eyebrow" data-fr="Communauté" data-en="Community">Communauté</div>
+      <h2 class="section-title" data-fr="Un bug ? Une idée ?" data-en="A bug? An idea?">Un bug ? Une idée ?</h2>
+      <p class="section-sub" style="margin:0 auto"
+        data-fr="EverStat grandit grâce à ses utilisateurs. Si vous avez trouvé un bug ou une idée de fonctionnalité, écrivez-moi — chaque retour compte."
+        data-en="EverStat grows thanks to its users. If you found a bug or have a feature idea, write to me — every piece of feedback counts.">
+        EverStat grandit grâce à ses utilisateurs. Si vous avez trouvé un bug ou une idée de fonctionnalité, écrivez-moi
+        —
+        chaque retour compte.</p>
+      <a href="mailto:EverStat@proton.me" class="btn-primary" style="display:inline-flex;margin:0 auto">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+        <span data-fr="Envoyer un message" data-en="Send a message">Envoyer un message</span>
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.arnimama.everstat&showAllReviews=true" target="_blank"
+        class="btn-ghost" style="display:inline-flex">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <span data-fr="Noter l'app" data-en="Rate the app">Noter l'app</span>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <a href="#" class="nav-logo">
+      <img src="images/icon.png" class="nav-icon" alt="EverStat">
+      <span class="nav-wordmark">Ever<span>Stat</span></span>
+    </a>
+    <div class="ft-links">
+      <a href="mailto:EverStat@proton.me" data-fr="Contact" data-en="Contact">Contact</a>
+      <a href="https://play.google.com/store/apps/details?id=com.arnimama.everstat" target="_blank" data-fr="Play Store"
+        data-en="Play Store">Play Store</a>
+      <a href="https://buymeacoffee.com/EverStat" target="_blank" data-fr="Soutenir" data-en="Support">Soutenir</a>
+    </div>
+    <div class="ft-copy" data-fr="Fait avec ☕ par un développeur solo" data-en="Made with ☕ by a solo developer">Fait
+      avec ☕ par un développeur solo</div>
+  </footer>
+  <!-- ── LIGHTBOX ── -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lbClose">&#x2715;</button>
+    <button class="lightbox-nav prev" id="lbPrev">&#8592;</button>
+    <img class="lightbox-img" id="lbImg" src="" alt="">
+    <button class="lightbox-nav next" id="lbNext">&#8594;</button>
+    <div class="lightbox-caption" id="lbCaption"></div>
+  </div>
+
+  <script>
+    // ── Lang ──
+    let lang = 'fr';
+    function setLang(l) {
+      lang = l;
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+      document.querySelectorAll('[data-fr]').forEach(el => {
+        const v = el.getAttribute('data-' + l);
+        if (v) el.innerHTML = v;
+      });
+      updateCaption();
+    }
+
+    // ── Nav scroll ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // ── Reveal ──
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => { if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // ── Carousel ──
+    const slides = Array.from(document.querySelectorAll('.carousel-slide'));
+    const dotsWrap = document.getElementById('cDots');
+    const track = document.getElementById('cTrack');
+    let current = 0;
+    let autoTimer = null;
+    const SLIDE_W = 200;   // active slide width px
+    const SLIDE_W_SM = 160; // inactive slide width px
+    const GAP = 20;
+
+    // Build dots
+    slides.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      d.onclick = () => goTo(i);
+      dotsWrap.appendChild(d);
+    });
+
+    function updateCaption() {
+      const cap = slides[current].getAttribute('data-caption-' + lang)
+        || slides[current].getAttribute('data-caption-fr') || '';
+      const el = document.getElementById('cCaption');
+      el.style.opacity = '0';
+      setTimeout(() => { el.textContent = cap; el.style.opacity = '1'; }, 150);
+    }
+
+    function getOffset(n) {
+      // Center slide n in the viewport
+      const wrapW = track.parentElement.offsetWidth;
+      let offset = 0;
+      for (let i = 0; i < n; i++) {
+        offset += (i === current - 1 ? SLIDE_W : SLIDE_W_SM) + GAP;
+      }
+      offset += SLIDE_W / 2; // center of active slide
+      return wrapW / 2 - offset;
+    }
+
+    function goTo(n) {
+      current = ((n % slides.length) + slides.length) % slides.length;
+      slides.forEach((s, i) => {
+        s.classList.remove('active', 'side1', 'side2', 'hidden');
+        const dist = Math.min(
+          Math.abs(i - current),
+          slides.length - Math.abs(i - current)
+        );
+        if (dist === 0) s.classList.add('active');
+        else if (dist === 1) s.classList.add('side1');
+        else if (dist === 2) s.classList.add('side2');
+        else s.classList.add('hidden');
+      });
+      // Shift track so active is centred
+      const wrapW = track.parentElement.offsetWidth;
+      let totalBefore = 0;
+      for (let i = 0; i < current; i++) {
+        totalBefore += SLIDE_W_SM + GAP;
+      }
+      const shift = wrapW / 2 - totalBefore - SLIDE_W / 2;
+      track.style.transform = `translateX(${shift}px)`;
+      document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+      updateCaption();
+    }
+
+    // Auto-advance every 4s
+    function startAuto() { autoTimer = setInterval(() => goTo(current + 1), 4000); }
+    function stopAuto() { clearInterval(autoTimer); }
+
+    document.getElementById('cPrev').onclick = () => { stopAuto(); goTo(current - 1); startAuto(); };
+    document.getElementById('cNext').onclick = () => { stopAuto(); goTo(current + 1); startAuto(); };
+
+    // Keyboard
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') { stopAuto(); goTo(current - 1); startAuto(); }
+      if (e.key === 'ArrowRight') { stopAuto(); goTo(current + 1); startAuto(); }
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Touch swipe
+    let tx = 0;
+    track.addEventListener('touchstart', e => { tx = e.touches[0].clientX; stopAuto(); }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
+      startAuto();
+    });
+
+    // Click on slide → go to it (or open lightbox if already active)
+    slides.forEach((s, i) => {
+      s.addEventListener('click', () => {
+        if (i === current) openLightbox(i);
+        else { stopAuto(); goTo(i); startAuto(); }
+      });
+    });
+
+    goTo(0);
+    startAuto();
+
+    // ── Lightbox ──
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbCaption = document.getElementById('lbCaption');
+    let lbCurrent = 0;
+
+    function openLightbox(i) {
+      stopAuto();
+      lbCurrent = i;
+      const s = slides[i];
+      lbImg.src = s.querySelector('img').src;
+      lbImg.alt = s.querySelector('img').alt;
+      lbCaption.textContent = s.getAttribute('data-caption-' + lang) || s.getAttribute('data-caption-fr') || '';
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      startAuto();
+    }
+
+    function lbNav(dir) {
+      lbCurrent = ((lbCurrent + dir + slides.length) % slides.length);
+      openLightbox(lbCurrent);
+    }
+
+    document.getElementById('lbClose').onclick = closeLightbox;
+    document.getElementById('lbPrev').onclick = (e) => { e.stopPropagation(); lbNav(-1); };
+    document.getElementById('lbNext').onclick = (e) => { e.stopPropagation(); lbNav(+1); };
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    lbImg.addEventListener('click', e => e.stopPropagation());
+
+    // Swipe in lightbox
+    let lbTx = 0;
+    lightbox.addEventListener('touchstart', e => { lbTx = e.touches[0].clientX; }, { passive: true });
+    lightbox.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - lbTx;
+      if (Math.abs(dx) > 40) lbNav(dx < 0 ? 1 : -1);
+    });
+  </script>
+</body>
+
+</html>
